@@ -3,6 +3,7 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
+import mlflow
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -145,6 +146,9 @@ def create_roc_curve(predictions_data: dict[str, Any]) -> plt.Figure:
     fpr, tpr, _ = roc_curve(y_test, y_prob)
     roc_auc = auc(fpr, tpr)
 
+    # Log ROC AUC to MLflow
+    mlflow.log_metric("roc_auc", roc_auc)
+
     fig, ax = plt.subplots(figsize=(16, 10))
 
     ax.plot(
@@ -179,6 +183,11 @@ def create_pr_curve(predictions_data: dict[str, Any]) -> plt.Figure:
     fig, ax = plt.subplots(figsize=(16, 11))
 
     prec, recall, _ = precision_recall_curve(y_test, y_prob)
+
+    # Calculate and log PR AUC
+    pr_auc = auc(recall, prec)
+    mlflow.log_metric("pr_auc", pr_auc)
+
     PrecisionRecallDisplay(precision=prec, recall=recall).plot(
         ax=ax, color="darkorange", lw=3
     )
@@ -208,7 +217,9 @@ def run_invariance_test(
 
     # Check if there's enough data after filtering
     if len(X_test_filtered) == 0:
-        raise ValueError(f"No data remains after filtering for feature '{test_feature}' > 1")
+        raise ValueError(
+            f"No data remains after filtering for feature '{test_feature}' > 1"
+        )
 
     # Create perturbed versions
     X_test_plus = X_test_filtered.copy()

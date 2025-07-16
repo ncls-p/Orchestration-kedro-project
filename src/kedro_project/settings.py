@@ -4,9 +4,12 @@ https://docs.kedro.org/en/stable/kedro_project_setup/settings.html."""
 
 # Instantiated project hooks.
 # from kedro_project.hooks import SparkHooks  # noqa: E402
+from kedro_mlflow.framework.hooks import MlflowHook
+
+from kedro_project.hooks import MLflowIntegrationHook
 
 # Hooks are executed in a Last-In-First-Out (LIFO) order.
-HOOKS = ()
+HOOKS = (MlflowHook(), MLflowIntegrationHook())
 
 # Installed plugins for which to disable hook auto-registration.
 # DISABLE_HOOKS_FOR_PLUGINS = ("kedro-viz",)
@@ -32,6 +35,7 @@ CONFIG_LOADER_ARGS = {
     "default_run_env": "local",
     "config_patterns": {
         "spark": ["spark*", "spark*/**"],
+        "mlflow": ["mlflow*", "mlflow*/**"],
     },
 }
 

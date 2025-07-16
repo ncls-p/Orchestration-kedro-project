@@ -1,0 +1,15 @@
+# MLflow configuration with SQLite backend
+server:
+  mlflow_tracking_uri: "sqlite:///mlflow.db"
+  
+tracking:
+  experiment:
+    name: "network-intrusion-detection"
+  run:
+    id: null
+    name: null
+    nested: true
+
+ui:
+  port: "5000"
+  host: "127.0.0.1"

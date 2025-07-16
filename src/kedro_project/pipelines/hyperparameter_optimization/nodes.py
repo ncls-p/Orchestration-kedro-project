@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+import mlflow
 import numpy as np
 import pandas as pd
 from hyperopt import fmin, hp, tpe
@@ -80,6 +81,11 @@ def optimize_hyperparameters(
         return -np.mean(scores_test)  # Minimize negative F1
 
     logger.info("Starting hyperparameter optimization...")
+
+    # Log optimization configuration
+    mlflow.log_param("cv_folds", cv_folds)
+    mlflow.log_param("max_evals", model_specs["max_evals"])
+    mlflow.log_param("algorithm", "tpe")
 
     optimum_params = fmin(
         fn=objective,
