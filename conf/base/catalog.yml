@@ -7,28 +7,40 @@ raw_network_logs:
 
 # Data processing pipeline outputs
 preprocessed_data:
-  type: pandas.ParquetDataset
-  filepath: data/02_intermediate/preprocessed_data.parquet
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/preprocessed_data.csv
+  load_args:
+    parse_dates: ["Timestamp"]
 
 data_with_time_features:
-  type: pandas.ParquetDataset
-  filepath: data/02_intermediate/data_with_time_features.parquet
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/data_with_time_features.csv
+  load_args:
+    parse_dates: ["Timestamp"]
 
 data_with_rolling_features:
-  type: pandas.ParquetDataset
-  filepath: data/02_intermediate/data_with_rolling_features.parquet
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/data_with_rolling_features.csv
+  load_args:
+    parse_dates: ["Timestamp"]
 
 data_with_lag_features:
-  type: pandas.ParquetDataset
-  filepath: data/02_intermediate/data_with_lag_features.parquet
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/data_with_lag_features.csv
+  load_args:
+    parse_dates: ["Timestamp"]
 
 data_with_time_since_features:
-  type: pandas.ParquetDataset
-  filepath: data/02_intermediate/data_with_time_since_features.parquet
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/data_with_time_since_features.csv
+  load_args:
+    parse_dates: ["Timestamp"]
 
 data_with_encoded_features:
-  type: pandas.ParquetDataset
-  filepath: data/03_primary/data_with_encoded_features.parquet
+  type: pandas.CSVDataset
+  filepath: data/03_primary/data_with_encoded_features.csv
+  load_args:
+    parse_dates: ["Timestamp"]
 
 # Encoders and preprocessing artifacts
 label_encoders:
@@ -38,8 +50,8 @@ label_encoders:
 
 # Feature matrix and target
 feature_matrix:
-  type: pandas.ParquetDataset
-  filepath: data/05_model_input/feature_matrix.parquet
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/feature_matrix.csv
 
 target_vector:
   type: pickle.PickleDataset
@@ -47,12 +59,12 @@ target_vector:
 
 # Train/test splits
 X_train:
-  type: pandas.ParquetDataset
-  filepath: data/05_model_input/X_train.parquet
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_train.csv
 
 X_test:
-  type: pandas.ParquetDataset
-  filepath: data/05_model_input/X_test.parquet
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_test.csv
 
 y_train:
   type: pickle.PickleDataset
@@ -81,8 +93,8 @@ model_performance_metrics:
   versioned: true
 
 feature_importance_data:
-  type: pandas.ParquetDataset
-  filepath: data/07_model_output/feature_importance_data.parquet
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/feature_importance_data.csv
 
 # Validation pipeline outputs
 validation_predictions:
@@ -103,8 +115,8 @@ shap_data:
   filepath: data/07_model_output/shap_data.pkl
 
 shap_feature_importance:
-  type: pandas.ParquetDataset
-  filepath: data/07_model_output/shap_feature_importance.parquet
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/shap_feature_importance.csv
 
 local_interpretations:
   type: json.JSONDataset
