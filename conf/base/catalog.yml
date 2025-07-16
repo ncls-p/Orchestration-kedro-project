@@ -1,0 +1,144 @@
+# Data Catalog for Network Intrusion Detection Pipeline
+
+# Raw data
+raw_network_logs:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/Time-Series_Network_logs.csv
+
+# Data processing pipeline outputs
+preprocessed_data:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/preprocessed_data.parquet
+
+data_with_time_features:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/data_with_time_features.parquet
+
+data_with_rolling_features:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/data_with_rolling_features.parquet
+
+data_with_lag_features:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/data_with_lag_features.parquet
+
+data_with_time_since_features:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/data_with_time_since_features.parquet
+
+data_with_encoded_features:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/data_with_encoded_features.parquet
+
+# Encoders and preprocessing artifacts
+label_encoders:
+  type: pickle.PickleDataset
+  filepath: data/04_feature/label_encoders.pkl
+  versioned: true
+
+# Feature matrix and target
+feature_matrix:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/feature_matrix.parquet
+
+target_vector:
+  type: pickle.PickleDataset
+  filepath: data/05_model_input/target_vector.pkl
+
+# Train/test splits
+X_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_train.parquet
+
+X_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_test.parquet
+
+y_train:
+  type: pickle.PickleDataset
+  filepath: data/05_model_input/y_train.pkl
+
+y_test:
+  type: pickle.PickleDataset
+  filepath: data/05_model_input/y_test.pkl
+
+# Hyperparameter optimization outputs
+optimized_hyperparameters:
+  type: json.JSONDataset
+  filepath: data/06_models/optimized_hyperparameters.json
+  versioned: true
+
+# Trained model
+trained_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/trained_model.pkl
+  versioned: true
+
+# Model evaluation metrics
+model_performance_metrics:
+  type: json.JSONDataset
+  filepath: data/07_model_output/model_performance_metrics.json
+  versioned: true
+
+feature_importance_data:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/feature_importance_data.parquet
+
+# Validation pipeline outputs
+validation_predictions:
+  type: json.JSONDataset
+  filepath: data/07_model_output/validation_predictions.json
+
+invariance_test_results:
+  type: json.JSONDataset
+  filepath: data/07_model_output/invariance_test_results.json
+
+prototype_test_results:
+  type: json.JSONDataset
+  filepath: data/07_model_output/prototype_test_results.json
+
+# Interpretability pipeline outputs
+shap_data:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/shap_data.pkl
+
+shap_feature_importance:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/shap_feature_importance.parquet
+
+local_interpretations:
+  type: json.JSONDataset
+  filepath: data/07_model_output/local_interpretations.json
+
+# Visualization outputs
+density_chart:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/density_chart.png
+
+calibration_curve:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/calibration_curve.png
+
+roc_curve:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/roc_curve.png
+
+pr_curve:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/pr_curve.png
+
+shap_summary_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/shap_summary_plot.png
+
+shap_feature_importance_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/shap_feature_importance_plot.png
+
+shap_dependence_plots:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/shap_dependence_plots.png
+
+feature_importance_comparison_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/feature_importance_comparison_plot.png

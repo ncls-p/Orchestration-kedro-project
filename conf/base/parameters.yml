@@ -1,0 +1,103 @@
+# Parameters for Network Intrusion Detection Pipeline
+
+# Data processing parameters
+rolling_window_size: 10
+lag_values: [1, 5]
+train_ratio: 0.8
+
+# Categorical columns to encode (excluding data leakage columns)
+categorical_columns:
+  - "Request_Type"
+  - "Protocol"
+  - "User_Agent"
+  - "Status"
+
+# Feature columns for model training
+feature_columns:
+  - "Payload_Size"
+  - "hour"
+  - "day_of_week"
+  - "day"
+  - "month"
+  - "minute"
+  - "is_weekend"
+  - "is_business_hours"
+  - "payload_rolling_mean"
+  - "payload_rolling_std"
+  - "payload_lag_1"
+  - "payload_lag_5"
+  - "time_since_last"
+  - "Request_Type_encoded"
+  - "Protocol_encoded"
+  - "User_Agent_encoded"
+  - "Status_encoded"
+
+# Hyperparameter optimization parameters
+cv_folds: 3
+
+# Model specifications for hyperparameter optimization
+model_specs:
+  name: "LightGBM"
+  max_evals: 20
+  params:
+    learning_rate: 
+      type: "uniform"
+      low: 0.001
+      high: 0.3
+    num_iterations:
+      type: "quniform"
+      low: 100
+      high: 1000
+      q: 50
+    max_depth:
+      type: "quniform"
+      low: 3
+      high: 10
+      q: 1
+    num_leaves:
+      type: "quniform"
+      low: 10
+      high: 100
+      q: 10
+    colsample_bytree:
+      type: "uniform"
+      low: 0.5
+      high: 1.0
+    subsample:
+      type: "uniform"
+      low: 0.5
+      high: 1.0
+    min_child_samples:
+      type: "quniform"
+      low: 5
+      high: 30
+      q: 5
+    reg_alpha:
+      type: "choice"
+      options: [0, 0.01, 0.1, 0.5, 1]
+    reg_lambda:
+      type: "choice"
+      options: [0, 0.01, 0.1, 0.5, 1]
+    scale_pos_weight:
+      type: "uniform"
+      low: 1
+      high: 10
+  override_schemas:
+    num_leaves: "int"
+    min_child_samples: "int"
+    max_depth: "int"
+    num_iterations: "int"
+
+# Model validation parameters
+invariance_test_feature: "Payload_Size"
+prototype_n_clusters: 10
+
+# Model interpretability parameters
+key_features_for_dependence:
+  - "Payload_Size"
+  - "hour"
+  - "payload_rolling_mean"
+  - "time_since_last"
+  - "is_business_hours"
+
+n_local_samples: 2

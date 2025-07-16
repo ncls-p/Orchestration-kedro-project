@@ -37,6 +37,9 @@ data/**
 out/
 .idea_modules/
 
+# VSCode
+.vscode/
+
 ### macOS
 *.DS_Store
 .AppleDouble
@@ -126,6 +129,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+CLAUDE.md
 
 # PyBuilder
 target/

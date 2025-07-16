@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-requires-python = "==3.12"
+requires-python = "==3.12.10"
 name = "kedro_project"
 readme = "README.md"
 dynamic = ["version"]
@@ -16,7 +16,15 @@ dependencies = [
     "kedro-viz>=6.7.0",
     "scikit-learn~=1.5.1",
     "seaborn~=0.12.1",
-    "setuptools; python_version >= '3.12'",
+    "setuptools; python_version == '3.12.10'",
+    "hyperopt>=0.2.7",
+    "shap>=0.48.0",
+    "lightgbm>=4.6.0",
+    "matplotlib>=3.10.3",
+    "pandas>=2.3.1",
+    "numpy>=2.2.6",
+    "pytest>=7.4.4",
+    "mlflow>=3.1.1",
 ]
 
 [project.scripts]
@@ -84,3 +92,6 @@ select = [
     "T201", # Print Statement
 ]
 ignore = ["E501"] # Ruff format takes care of line-too-long
+
+[tool.kedro_telemetry]
+project_id = "04d212a0f7fe4b71b7b7a18faf8c38d3"

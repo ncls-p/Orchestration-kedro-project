@@ -10,6 +10,10 @@ def register_pipelines() -> dict[str, Pipeline]:
     Returns:
         A mapping from pipeline names to ``Pipeline`` objects.
     """
+    from functools import reduce
+
     pipelines = find_pipelines()
-    pipelines["__default__"] = sum(pipelines.values())
+    pipelines["__default__"] = reduce(
+        lambda a, b: a + b, pipelines.values(), Pipeline([])
+    )
     return pipelines
