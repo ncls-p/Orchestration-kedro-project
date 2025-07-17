@@ -13,6 +13,7 @@ from typing import Any, cast
 import mlflow
 import numpy as np
 import pandas as pd
+import hyperopt.hp as hp
 from hyperopt import Trials, fmin, tpe
 from lightgbm import LGBMClassifier
 from sklearn.metrics import f1_score
@@ -26,13 +27,19 @@ def _prepare_space(model_specs: dict[str, Any]) -> dict[str, Any]:
     space = {}
     for param, spec in model_specs["params"].items():
         if spec["type"] == "quniform":
-            space[param] = spec["low"] + spec["q"] * np.arange(
-                int((spec["high"] - spec["low"]) / spec["q"]) + 1
-            )
+            # Use quniform but cast to int if needed
+            space[param] = hp.quniform(param, spec["low"], spec["high"], spec["q"])
         elif spec["type"] == "uniform":
-            space[param] = (spec["low"], spec["high"])
+            space[param] = hp.uniform(param, spec["low"], spec["high"])
         elif spec["type"] == "choice":
-            space[param] = spec["choices"]
+            # Support both "choice" and "choices" keys
+            choices = spec.get("choices", spec.get("choice", []))
+            space[param] = hp.choice(param, choices)
+        else:
+            raise ValueError(
+                f"Unsupported parameter type: {spec['type']}. "
+                f"Supported types are: 'quniform', 'uniform', 'choice'"
+            )
     return space
 
 
@@ -93,6 +100,19 @@ def _cast_results(
                 optimum_params[param] = int(optimum_params[param])
             elif cast_type == "float":
                 optimum_params[param] = float(optimum_params[param])
+
+    # Auto-cast quniform parameters to int based on parameter name patterns
+    for param, value in optimum_params.items():
+        if isinstance(value, float) and any(
+            pattern in param.lower()
+            for pattern in [
+                "n_estimators",
+                "max_depth",
+                "num_leaves",
+                "min_child_samples",
+            ]
+        ):
+            optimum_params[param] = int(value)
 
     # Convert all numpy types to Python types for JSON serialization
     for key, value in optimum_params.items():
@@ -167,7 +187,21 @@ def optimize_hyperparameters(
 
             # Create objective function with closure
             def objective_fn(params: dict[str, Any]) -> float:
-                return _objective(params, X_train, y_train, model_specs, cv_folds)
+                # Ensure integer parameters are properly cast before passing to LGBM
+                cast_params = params.copy()
+                for param, value in cast_params.items():
+                    if isinstance(value, float) and any(
+                        pattern in param.lower()
+                        for pattern in [
+                            "n_estimators",
+                            "max_depth",
+                            "num_leaves",
+                            "min_child_samples",
+                            "num_iterations",
+                        ]
+                    ):
+                        cast_params[param] = int(value)
+                return _objective(cast_params, X_train, y_train, model_specs, cv_folds)
 
             # Run optimization
             optimum_params = _run_search(objective_fn, space, model_specs["max_evals"])
@@ -177,7 +211,8 @@ def optimize_hyperparameters(
 
     except Exception as e:
         logger.error(f"Hyperparameter optimization failed: {e}")
-        result = {}
+        # Return default parameters if optimization fails
+        result = {"learning_rate": 0.1, "n_estimators": 100}
 
     return result
 

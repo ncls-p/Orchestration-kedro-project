@@ -11,7 +11,7 @@ import logging
 from typing import Any
 
 import mlflow
-import mlflow.sklearn as mlflow_lightgbm
+import mlflow.lightgbm as mlflow_lightgbm
 from kedro.framework.hooks import hook_impl
 from kedro.io import DataCatalog
 from kedro.pipeline.node import Node
@@ -133,8 +133,8 @@ class MLflowIntegrationHook:
                         registered_model_name="network-intrusion-detection-model",
                     )
                     logger.info("Logged trained model to MLflow")
-                except RuntimeError as exc:
-                    logger.error(_LogMessage(f"Failed to log model: {exc}"))
+                except Exception as exc:
+                    logger.error(f"Failed to log model: {exc}")
 
     def _log_model_evaluation(self, outputs: dict[str, Any]) -> None:
         """Log model evaluation metrics."""
