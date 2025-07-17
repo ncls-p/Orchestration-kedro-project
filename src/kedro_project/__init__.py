@@ -28,8 +28,6 @@ def _patch_node_init() -> None:
         if not inputs and not outputs:
             outputs = "__dummy__"
 
-        from collections.abc import Iterable
-
         # Normalize iterable inputs/outputs to lists for typing compatibility
         if inputs is not None and not isinstance(inputs, (str, list, dict)):
             inputs = list(inputs)  # type: ignore[arg-type]
