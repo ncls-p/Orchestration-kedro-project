@@ -64,6 +64,9 @@ atlassian-ide-plugin.xml
 # C extensions
 *.so
 
+.claude
+.pytest_cache
+.ruff_cache
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/

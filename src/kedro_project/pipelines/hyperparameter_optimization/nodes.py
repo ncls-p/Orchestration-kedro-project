@@ -82,46 +82,47 @@ def optimize_hyperparameters(
 
     logger.info("Starting hyperparameter optimization...")
 
-    # Log optimization configuration
-    mlflow.log_param("cv_folds", cv_folds)
-    mlflow.log_param("max_evals", model_specs["max_evals"])
-    mlflow.log_param("algorithm", "tpe")
+    with mlflow.start_run(nested=True, run_name="optimize_hyperparameters"):
+        # Log optimization configuration
+        mlflow.log_param("cv_folds", cv_folds)
+        mlflow.log_param("max_evals", model_specs["max_evals"])
+        mlflow.log_param("algorithm", "tpe")
 
-    optimum_params = fmin(
-        fn=objective,
-        space=hyperopt_params,
-        algo=tpe.suggest,
-        max_evals=model_specs["max_evals"],
-        rstate=np.random.default_rng(42),
-    )
+        optimum_params = fmin(
+            fn=objective,
+            space=hyperopt_params,
+            algo=tpe.suggest,
+            max_evals=model_specs["max_evals"],
+            rstate=np.random.default_rng(42),
+        )
 
-    # Cast optimized parameters
-    if optimum_params is not None:
-        for param in model_specs["override_schemas"]:
-            if param in optimum_params:
-                cast_type = model_specs["override_schemas"][param]
-                if cast_type == "int":
-                    optimum_params[param] = int(optimum_params[param])
-                elif cast_type == "float":
-                    optimum_params[param] = float(optimum_params[param])
+        # Cast optimized parameters
+        if optimum_params is not None:
+            for param in model_specs["override_schemas"]:
+                if param in optimum_params:
+                    cast_type = model_specs["override_schemas"][param]
+                    if cast_type == "int":
+                        optimum_params[param] = int(optimum_params[param])
+                    elif cast_type == "float":
+                        optimum_params[param] = float(optimum_params[param])
 
-        # Convert all numpy types to Python types for JSON serialization
-        for key, value in optimum_params.items():
-            if hasattr(value, "item"):  # numpy scalars
-                optimum_params[key] = value.item()
-            elif isinstance(value, np.integer):
-                optimum_params[key] = int(value)
-            elif isinstance(value, np.floating):
-                optimum_params[key] = float(value)
+            # Convert all numpy types to Python types for JSON serialization
+            for key, value in optimum_params.items():
+                if hasattr(value, "item"):  # numpy scalars
+                    optimum_params[key] = value.item()
+                elif isinstance(value, np.integer):
+                    optimum_params[key] = int(value)
+                elif isinstance(value, np.floating):
+                    optimum_params[key] = float(value)
 
-        logger.info("Hyperparameter optimization completed successfully")
-        for key, value in optimum_params.items():
-            logger.info(f"  {key}: {value}")
-    else:
-        logger.warning("Optimization failed, using default parameters")
-        optimum_params = {}
+            logger.info("Hyperparameter optimization completed successfully")
+            for key, value in optimum_params.items():
+                logger.info(f"  {key}: {value}")
+        else:
+            logger.warning("Optimization failed, using default parameters")
+            optimum_params = {}
 
-    return optimum_params
+        return optimum_params
 
 
 def train_optimized_model(
