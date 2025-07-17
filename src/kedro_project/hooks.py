@@ -1,14 +1,30 @@
+"""Project hooks for the kedro-project.
+
+This module contains Kedro hooks that provide project-wide functionality including
+MLflow experiment setup and pipeline lifecycle management. Hooks are automatically
+discovered and executed by Kedro at appropriate points in the pipeline lifecycle.
+"""
+
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict
+from typing import Any
 
 import mlflow
-import mlflow.lightgbm
-from kedro.framework.context import KedroContext
+import mlflow.sklearn as mlflow_lightgbm
 from kedro.framework.hooks import hook_impl
 from kedro.io import DataCatalog
 from kedro.pipeline.node import Node
 
 logger = logging.getLogger(__name__)
+
+
+class _LogMessage:
+    def __init__(self, msg: str):
+        self.message = msg
+
+    def __str__(self):
+        return self.message
 
 
 class MLflowIntegrationHook:
@@ -49,7 +65,7 @@ class MLflowIntegrationHook:
 
     @hook_impl
     def before_node_run(
-        self, node: Node, catalog: DataCatalog, inputs: Dict[str, Any], is_async: bool
+        self, node: Node, catalog: DataCatalog, inputs: dict[str, Any], is_async: bool
     ) -> None:
         """Hook to be called before a node runs."""
         if node.name == "optimize_hyperparameters":
@@ -66,8 +82,8 @@ class MLflowIntegrationHook:
         self,
         node: Node,
         catalog: DataCatalog,
-        inputs: Dict[str, Any],
-        outputs: Dict[str, Any],
+        inputs: dict[str, Any],
+        outputs: dict[str, Any],
     ) -> None:
         """Hook to be called after a node runs."""
         try:
@@ -83,7 +99,7 @@ class MLflowIntegrationHook:
         except Exception as e:
             logger.error(f"Error in MLflow logging for node {node.name}: {e}")
 
-    def _log_hyperparameter_optimization(self, outputs: Dict[str, Any]) -> None:
+    def _log_hyperparameter_optimization(self, outputs: dict[str, Any]) -> None:
         """Log hyperparameter optimization results."""
         if "optimized_hyperparameters" in outputs:
             with mlflow.start_run(nested=True, run_name="hyperparameter_optimization"):
@@ -96,7 +112,7 @@ class MLflowIntegrationHook:
                 logger.info("Logged hyperparameter optimization results to MLflow")
 
     def _log_model_training(
-        self, inputs: Dict[str, Any], outputs: Dict[str, Any]
+        self, inputs: dict[str, Any], outputs: dict[str, Any]
     ) -> None:
         """Log model training results."""
         if "trained_model" in outputs:
@@ -111,16 +127,16 @@ class MLflowIntegrationHook:
 
                 # Log model using LightGBM flavor
                 try:
-                    mlflow.lightgbm.log_model(
+                    mlflow_lightgbm.log_model(
                         model,
                         "model",
                         registered_model_name="network-intrusion-detection-model",
                     )
                     logger.info("Logged trained model to MLflow")
-                except Exception as e:
-                    logger.error(f"Failed to log model to MLflow: {e}")
+                except RuntimeError as exc:
+                    logger.error(_LogMessage(f"Failed to log model: {exc}"))
 
-    def _log_model_evaluation(self, outputs: Dict[str, Any]) -> None:
+    def _log_model_evaluation(self, outputs: dict[str, Any]) -> None:
         """Log model evaluation metrics."""
         if "model_performance_metrics" in outputs:
             with mlflow.start_run(nested=True, run_name="model_evaluation"):

@@ -20,6 +20,7 @@
 import re
 
 from kedro.framework.cli.utils import find_stylesheets
+
 from kedro_project import __version__ as release
 
 # -- Project information -----------------------------------------------------
@@ -28,7 +29,8 @@ project = "kedro_project"
 author = "Kedro"
 
 # The short X.Y version.
-version = re.match(r"^([0-9]+\.[0-9]+).*", release).group(1)
+version_match = re.match(r"^([0-9]+\.[0-9]+).*", release)
+version = version_match.group(1) if version_match else release
 
 # -- General configuration ---------------------------------------------------
 
@@ -207,11 +209,11 @@ def remove_arrows_in_examples(lines):
         lines[i] = line.replace(">>>", "")
 
 
-def autodoc_process_docstring(app, what, name, obj, options, lines):
+def autodoc_process_docstring(_app, _what, _name, _obj, _options, lines):
     remove_arrows_in_examples(lines)
 
 
-def skip(app, what, name, obj, skip, options):
+def skip(_app, _what, name, _obj, skip, _options):
     if name == "__init__":
         return False
     return skip

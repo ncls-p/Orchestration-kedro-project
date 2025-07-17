@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Start MLflow UI with correct configuration."""
 
+import logging
 import os
 import subprocess
 import sys
+
+LOGGER = logging.getLogger(__name__)
 
 
 def start_mlflow_ui():
     """Start MLflow UI with SQLite backend."""
     # Check if we're in the right directory
     if not os.path.exists("mlflow.db"):
-        print(
+        LOGGER.info(
             "Error: mlflow.db not found. Please run this script from the project root."
         )
         sys.exit(1)
@@ -27,17 +30,17 @@ def start_mlflow_ui():
         "127.0.0.1",
     ]
 
-    print("Starting MLflow UI...")
-    print(f"Command: {' '.join(cmd)}")
-    print("UI will be available at: http://127.0.0.1:5000")
-    print("Press Ctrl+C to stop the server")
+    LOGGER.info("Starting MLflow UI...")
+    LOGGER.info("Command: %s", " ".join(cmd))
+    LOGGER.info("UI will be available at: http://127.0.0.1:5000")
+    LOGGER.info("Press Ctrl+C to stop the server")
 
     try:
         subprocess.run(cmd, check=True)
     except KeyboardInterrupt:
-        print("\nMLflow UI stopped.")
+        LOGGER.info("MLflow UI stopped.")
     except subprocess.CalledProcessError as e:
-        print(f"Error starting MLflow UI: {e}")
+        LOGGER.info("Error starting MLflow UI: %s", e)
         sys.exit(1)
 
 

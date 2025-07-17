@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from lightgbm.sklearn import LGBMClassifier
+from matplotlib.figure import Figure
 
 from kedro_project.pipelines.model_interpretability.nodes import (
     analyze_local_interpretations,
@@ -127,7 +128,7 @@ class TestModelInterpretabilityNodes:
         mock_summary_plot.assert_called_once()
 
         # Check that figure is created
-        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig, Figure)
 
         # Check that title is set
         ax = fig.axes[0]
@@ -155,7 +156,7 @@ class TestModelInterpretabilityNodes:
         )
 
         # Check figure
-        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig, Figure)
         ax = fig.axes[0]
         assert "SHAP Importance" in ax.get_title()
 
@@ -179,7 +180,7 @@ class TestModelInterpretabilityNodes:
 
         # Check that figures are created
         for plot_name, fig in plots.items():
-            assert isinstance(fig, plt.Figure)
+            assert isinstance(fig, Figure)
             plt.close(fig)
 
     def test_analyze_local_interpretations(
@@ -240,7 +241,7 @@ class TestModelInterpretabilityNodes:
         )
 
         # Check that figure is created
-        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig, Figure)
 
         # Check that figure has two subplots
         assert len(fig.axes) == 2

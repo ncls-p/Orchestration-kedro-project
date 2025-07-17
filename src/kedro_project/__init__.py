@@ -1,4 +1,3 @@
-"""kedro-project
-"""
+"""kedro-project"""
 
 __version__ = "0.1"

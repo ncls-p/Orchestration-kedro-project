@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from lightgbm.sklearn import LGBMClassifier
+from matplotlib.figure import Figure
 
 from kedro_project.pipelines.model_validation.nodes import (
     create_calibration_curve,
@@ -101,7 +102,7 @@ class TestModelValidationNodes:
         fig = create_density_chart(sample_predictions_data)
 
         # Check that figure is created
-        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig, Figure)
 
         # Check that figure has axes
         assert len(fig.axes) > 0
@@ -122,7 +123,7 @@ class TestModelValidationNodes:
         fig = create_calibration_curve(sample_predictions_data)
 
         # Check that figure is created
-        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig, Figure)
 
         # Check that figure has axes
         assert len(fig.axes) > 0
@@ -143,7 +144,7 @@ class TestModelValidationNodes:
         fig = create_roc_curve(sample_predictions_data)
 
         # Check that figure is created
-        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig, Figure)
 
         # Check that figure has axes
         assert len(fig.axes) > 0
@@ -164,7 +165,7 @@ class TestModelValidationNodes:
         fig = create_pr_curve(sample_predictions_data)
 
         # Check that figure is created
-        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig, Figure)
 
         # Check that figure has axes
         assert len(fig.axes) > 0
@@ -185,9 +186,7 @@ class TestModelValidationNodes:
         X_test_modified = X_test.copy()
         X_test_modified["feature1"] = np.abs(X_test_modified["feature1"]) + 2
 
-        results = run_invariance_test(
-            model, X_test_modified, test_feature="feature1"
-        )
+        results = run_invariance_test(model, X_test_modified, test_feature="feature1")
 
         # Check that results have correct structure
         assert isinstance(results, dict)
@@ -238,19 +237,19 @@ class TestModelValidationNodes:
 
         # All visualization functions should handle minimal data
         fig1 = create_density_chart(minimal_data)
-        assert isinstance(fig1, plt.Figure)
+        assert isinstance(fig1, Figure)
         plt.close(fig1)
 
         fig2 = create_calibration_curve(minimal_data)
-        assert isinstance(fig2, plt.Figure)
+        assert isinstance(fig2, Figure)
         plt.close(fig2)
 
         fig3 = create_roc_curve(minimal_data)
-        assert isinstance(fig3, plt.Figure)
+        assert isinstance(fig3, Figure)
         plt.close(fig3)
 
         fig4 = create_pr_curve(minimal_data)
-        assert isinstance(fig4, plt.Figure)
+        assert isinstance(fig4, Figure)
         plt.close(fig4)
 
     def test_invariance_test_with_missing_feature(self, sample_model_and_data):
@@ -258,7 +257,9 @@ class TestModelValidationNodes:
         model, X_test, y_test = sample_model_and_data
 
         # Test with a feature that doesn't exist
-        with pytest.raises(ValueError, match="Feature 'NonExistentFeature' not found in test data"):
+        with pytest.raises(
+            ValueError, match="Feature 'NonExistentFeature' not found in test data"
+        ):
             run_invariance_test(model, X_test, test_feature="NonExistentFeature")
 
     def test_probability_predictions_data_types(self, sample_model_and_data):

@@ -1,6 +1,12 @@
-"""Project settings. There is no need to edit this file unless you want to change values
-from the Kedro defaults. For further information, including these default values, see
-https://docs.kedro.org/en/stable/kedro_project_setup/settings.html."""
+"""Project settings for the kedro-project.
+
+This module contains the main configuration settings for the Kedro project,
+including hook registration, configuration loader setup, and project-wide
+settings that control pipeline behavior and plugin integration.
+
+For further information about Kedro settings, see:
+https://docs.kedro.org/en/stable/kedro_project_setup/settings.html
+"""
 
 # Instantiated project hooks.
 # from kedro_project.hooks import SparkHooks  # noqa: E402
@@ -10,6 +16,20 @@ from kedro_project.hooks import MLflowIntegrationHook
 
 # Hooks are executed in a Last-In-First-Out (LIFO) order.
 HOOKS = (MlflowHook(), MLflowIntegrationHook())
+"""Tuple of instantiated project hooks.
+
+This tuple contains instances of hook classes that will be automatically
+executed by Kedro at appropriate points in the pipeline lifecycle. The hooks
+provide cross-cutting functionality like MLflow experiment setup and logging.
+
+The hooks are executed in Last-In-First-Out (LIFO) order, meaning the last
+hook in the tuple is executed first. This allows for proper initialization
+and cleanup sequencing.
+
+Current hooks:
+- MlflowHook: From kedro-mlflow plugin for MLflow integration
+- MLflowIntegrationHook: Custom hook for project-specific MLflow tracking
+"""
 
 # Installed plugins for which to disable hook auto-registration.
 # DISABLE_HOOKS_FOR_PLUGINS = ("kedro-viz",)
@@ -29,6 +49,12 @@ HOOKS = (MlflowHook(), MLflowIntegrationHook())
 from kedro.config import OmegaConfigLoader  # noqa: E402
 
 CONFIG_LOADER_CLASS = OmegaConfigLoader
+"""Class that manages how configuration is loaded.
+
+Uses OmegaConfigLoader for advanced configuration management with support
+for environment-specific configurations and pattern-based config loading.
+"""
+
 # Keyword arguments to pass to the `CONFIG_LOADER_CLASS` constructor.
 CONFIG_LOADER_ARGS = {
     "base_env": "base",
@@ -38,6 +64,13 @@ CONFIG_LOADER_ARGS = {
         "mlflow": ["mlflow*", "mlflow*/**"],
     },
 }
+"""Configuration loader arguments.
+
+Dictionary containing configuration for the OmegaConfigLoader including:
+- base_env: The base environment for configuration loading
+- default_run_env: The default environment to use when running pipelines
+- config_patterns: Pattern matching for different configuration types
+"""
 
 # Class that manages Kedro's library components.
 # from kedro.framework.context import KedroContext

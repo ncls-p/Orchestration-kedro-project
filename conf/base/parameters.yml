@@ -40,7 +40,7 @@ model_specs:
   name: "LightGBM"
   max_evals: 20
   params:
-    learning_rate: 
+    learning_rate:
       type: "uniform"
       low: 0.001
       high: 0.3

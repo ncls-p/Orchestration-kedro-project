@@ -25,11 +25,13 @@ class TestDataProcessingNodes:
         """Create sample raw data for testing."""
         return pd.DataFrame(
             {
-                "Timestamp": pd.to_datetime([
-                    "2025-01-01 10:00:00",
-                    "2025-01-01 11:00:00",
-                    "2025-01-01 12:00:00",
-                ]),
+                "Timestamp": pd.to_datetime(
+                    [
+                        "2025-01-01 10:00:00",
+                        "2025-01-01 11:00:00",
+                        "2025-01-01 12:00:00",
+                    ]
+                ),
                 "Source_IP": ["192.168.1.1", "192.168.1.2", "192.168.1.3"],
                 "Destination_IP": ["10.0.0.1", "10.0.0.2", "10.0.0.3"],
                 "Port": [80, 443, 8080],
