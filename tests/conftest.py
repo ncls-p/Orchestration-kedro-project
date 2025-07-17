@@ -112,3 +112,18 @@ def matplotlib_cleanup():
 
     # Close all figures to prevent memory leaks
     plt.close("all")
+
+
+# ---------------------------------------------------------------------------
+# Auto-discovered plugin modules and shared marker constants for new test-suite
+# ---------------------------------------------------------------------------
+pytest_plugins = [
+    "tests.fixtures.data.raw",
+    "tests.fixtures.data.processed",
+    "tests.fixtures.models.base",
+    "tests.fixtures.models.trained",
+    "tests.fixtures.catalog",
+]
+
+PIPELINE_MARKER = "pipeline"
+MODEL_STAGE_MARKER = "model_stage"
