@@ -25,14 +25,14 @@ def start_mlflow_ui():
         "--backend-store-uri",
         "sqlite:///mlflow.db",
         "--port",
-        "5000",
+        "5001",
         "--host",
         "127.0.0.1",
     ]
 
     LOGGER.info("Starting MLflow UI...")
     LOGGER.info("Command: %s", " ".join(cmd))
-    LOGGER.info("UI will be available at: http://127.0.0.1:5000")
+    LOGGER.info("UI will be available at: http://127.0.0.1:5001")
     LOGGER.info("Press Ctrl+C to stop the server")
 
     try:

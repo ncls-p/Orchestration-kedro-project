@@ -5,6 +5,7 @@ from .nodes import (
     create_density_chart,
     create_pr_curve,
     create_roc_curve,
+    evaluate_model,
     generate_probability_predictions,
     run_invariance_test,
     run_prototype_test,
@@ -55,6 +56,12 @@ def create_pipeline(**_kwargs) -> Pipeline:
                 inputs=["trained_model", "X_test", "params:prototype_n_clusters"],
                 outputs="prototype_test_results",
                 name="run_prototype_test",
+            ),
+            node(
+                func=evaluate_model,
+                inputs=["trained_model", "X_test", "y_test", "params:cv_folds"],
+                outputs="model_performance_metrics",
+                name="evaluate_model",
             ),
         ]
     )

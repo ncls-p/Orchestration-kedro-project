@@ -7,12 +7,19 @@ from .nodes import (
     create_shap_dependence_plots,
     create_shap_feature_importance,
     create_shap_summary_plot,
+    extract_feature_importance,
 )
 
 
 def create_pipeline(**_kwargs) -> Pipeline:
     return pipeline(
         [
+            node(
+                func=extract_feature_importance,
+                inputs="trained_model",
+                outputs="feature_importance_data",
+                name="extract_feature_importance",
+            ),
             node(
                 func=compute_shap_values,
                 inputs=["trained_model", "X_test"],

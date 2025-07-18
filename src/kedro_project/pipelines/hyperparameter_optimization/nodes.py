@@ -13,8 +13,7 @@ from typing import Any, cast
 import mlflow
 import numpy as np
 import pandas as pd
-import hyperopt.hp as hp
-from hyperopt import Trials, fmin, tpe
+from hyperopt import Trials, fmin, hp, tpe
 from lightgbm import LGBMClassifier
 from sklearn.metrics import f1_score
 from sklearn.model_selection import TimeSeriesSplit

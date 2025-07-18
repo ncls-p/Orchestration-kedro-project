@@ -246,9 +246,6 @@ def create_roc_curve(predictions_data: dict[str, Any]) -> Any:
     fpr, tpr, _ = roc_curve(y_test, y_prob)
     roc_auc = auc(fpr, tpr)
 
-    # Log ROC AUC to MLflow
-    mlflow.log_metric("roc_auc", roc_auc)
-
     fig, ax = plt.subplots(figsize=(16, 10))
 
     ax.plot(
@@ -298,9 +295,8 @@ def create_pr_curve(predictions_data: dict[str, Any]) -> Any:
 
     prec, recall, _ = precision_recall_curve(y_test, y_prob)
 
-    # Calculate and log PR AUC
+    # Calculate PR AUC
     pr_auc = auc(recall, prec)
-    mlflow.log_metric("pr_auc", pr_auc)
 
     PrecisionRecallDisplay(precision=prec, recall=recall).plot(
         ax=ax, color="darkorange", lw=3
@@ -446,6 +442,10 @@ def _compute_metrics(
     recall = recall_score(y_test, y_pred, average="weighted")
     f1 = f1_score(y_test, y_pred, average="weighted")
     roc_auc = roc_auc_score(y_test, y_pred_proba)
+    
+    # Calculate PR AUC
+    prec_curve, recall_curve, _ = precision_recall_curve(y_test, y_pred_proba)
+    pr_auc = auc(recall_curve, prec_curve)
 
     # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)
@@ -456,6 +456,7 @@ def _compute_metrics(
         "recall": recall,
         "f1_score": f1,
         "roc_auc": roc_auc,
+        "pr_auc": pr_auc,
         "confusion_matrix": cm,
         "cv_scores": cv_scores,
         "y_pred": y_pred,
@@ -486,6 +487,7 @@ def _aggregate_metrics(raw_metrics: dict[str, Any]) -> dict[str, Any]:
         "recall": raw_metrics["recall"],
         "f1_score": raw_metrics["f1_score"],
         "roc_auc": raw_metrics["roc_auc"],
+        "pr_auc": raw_metrics["pr_auc"],
         "confusion_matrix": raw_metrics["confusion_matrix"].tolist(),
         "cv_scores": cv_scores.tolist(),
         "cv_mean_accuracy": cv_scores.mean(),
@@ -504,16 +506,8 @@ def _log_metrics(metrics: dict[str, Any]) -> None:
         >>> metrics = {"accuracy": 0.95, "f1_score": 0.94}
         >>> _log_metrics(metrics)
     """
-    for metric_name, metric_value in metrics.items():
-        if isinstance(metric_value, (int, float)):
-            mlflow.log_metric(metric_name, metric_value)
-        elif isinstance(metric_value, list):
-            # Log list metrics as individual items
-            for i, value in enumerate(metric_value):
-                mlflow.log_metric(f"{metric_name}_{i}", value)
-        else:
-            # Log other types as text
-            mlflow.log_text(str(metric_value), f"{metric_name}.txt")
+    # Skip metrics logging in nodes - handled by hooks to avoid duplication
+    pass
 
 
 def evaluate_model(

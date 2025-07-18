@@ -21,7 +21,43 @@ __all__ = [
     "create_shap_dependence_plots",
     "analyze_local_interpretations",
     "create_global_feature_importance_comparison",
+    "extract_feature_importance",
 ]
+
+
+def extract_feature_importance(
+    model: LGBMClassifier,
+) -> pd.DataFrame:
+    """
+    Extract feature importance from trained LightGBM model.
+
+    Args:
+        model: Trained LightGBM classifier model
+
+    Returns:
+        DataFrame with feature names and their importance scores
+
+    Examples:
+        >>> model = LGBMClassifier()
+        >>> importance_df = extract_feature_importance(model)
+        >>> print(importance_df.columns.tolist())
+        ['feature', 'importance']
+    """
+    logger.info("Extracting feature importance from model...")
+
+    # Get feature importance
+    feature_importance = model.feature_importances_
+    feature_names = model.feature_name_
+
+    # Create DataFrame
+    importance_df = pd.DataFrame({
+        'feature': feature_names,
+        'importance': feature_importance
+    }).sort_values('importance', ascending=False)
+
+    logger.info(f"Extracted importance for {len(importance_df)} features")
+
+    return importance_df
 
 
 def compute_shap_values(
