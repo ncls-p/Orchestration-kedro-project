@@ -41,7 +41,8 @@ def test_directional():
         "strong_negative": [0.0, 0.0, 0.0],
         "neutral": [0.0, 0.0, 0.0],
     })
-    probs = model.predict_proba(X_test)[:, 1]
+    probs_all = model.predict_proba(X_test)
+    probs = np.asarray(probs_all)[:, 1]
     assert probs[0] < probs[1] < probs[2], "Probability should increase with strong_positive feature"
     
     # Test 2: Increasing strong_negative should decrease predicted probability
@@ -50,7 +51,8 @@ def test_directional():
         "strong_negative": [0.0, 1.0, 2.0],
         "neutral": [0.0, 0.0, 0.0],
     })
-    probs_neg = model.predict_proba(X_test_neg)[:, 1]
+    probs_neg_all = model.predict_proba(X_test_neg)
+    probs_neg = np.asarray(probs_neg_all)[:, 1]
     assert probs_neg[0] > probs_neg[1] > probs_neg[2], "Probability should decrease with strong_negative feature"
     
     # Test 3: Feature importance should reflect known relationships

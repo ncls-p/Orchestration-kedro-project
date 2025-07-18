@@ -27,7 +27,8 @@ def test_invariance():
     
     # Test 1: Model should be invariant to feature order
     X_reordered = X[["feature3", "feature1", "feature2"]]
-    pred_original = model.predict_proba(X)[:, 1]
+    pred_original_all = model.predict_proba(X)
+    pred_original = np.asarray(pred_original_all)[:, 1]
     
     # Retrain model with reordered features
     model_reordered = LGBMClassifier(
@@ -37,14 +38,16 @@ def test_invariance():
         verbose=-1
     )
     model_reordered.fit(X_reordered, y)
-    pred_reordered = model_reordered.predict_proba(X_reordered)[:, 1]
+    pred_reordered_all = model_reordered.predict_proba(X_reordered)
+    pred_reordered = np.asarray(pred_reordered_all)[:, 1]
     
     # Predictions should be very similar
     assert np.allclose(pred_original, pred_reordered, atol=0.1)
     
     # Test 2: Model should be robust to small perturbations
     X_perturbed = X + np.random.normal(0, 0.01, X.shape)
-    pred_perturbed = model.predict_proba(X_perturbed)[:, 1]
+    pred_perturbed_all = model.predict_proba(X_perturbed)
+    pred_perturbed = np.asarray(pred_perturbed_all)[:, 1]
     
     # Most predictions should remain similar
     prediction_changes = np.abs(pred_original - pred_perturbed)
@@ -52,7 +55,8 @@ def test_invariance():
     
     # Test 3: Model should handle duplicate samples consistently
     X_duplicated = pd.concat([X, X.iloc[[0]]], ignore_index=True)
-    pred_duplicated = model.predict_proba(X_duplicated)[:, 1]
+    pred_duplicated_all = model.predict_proba(X_duplicated)
+    pred_duplicated = np.asarray(pred_duplicated_all)[:, 1]
     
     # First and last predictions should be identical (same sample)
     assert np.abs(pred_duplicated[0] - pred_duplicated[-1]) < 1e-6

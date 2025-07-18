@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import pandas as pd
 from lightgbm import LGBMClassifier
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score
 
 
 @pytest.mark.model_stage("unit")
@@ -31,13 +31,19 @@ def test_unit():
     
     # Test predictions
     predictions = model.predict(X)
-    assert len(predictions) == len(y)
-    assert all(pred in [0, 1] for pred in predictions)
+    assert predictions is not None
+    # Convert to numpy array to ensure consistent behavior
+    pred_array = np.asarray(predictions)
+    assert pred_array.shape[0] == len(y)
+    assert np.all(np.isin(pred_array, [0, 1]))
     
     # Test probability predictions
     probabilities = model.predict_proba(X)
-    assert probabilities.shape == (len(X), 2)
-    assert np.allclose(probabilities.sum(axis=1), 1.0)
+    assert probabilities is not None
+    # Convert to numpy array to ensure consistent behavior
+    prob_array = np.asarray(probabilities)
+    assert prob_array.shape == (len(X), 2)
+    assert np.allclose(prob_array.sum(axis=1), 1.0)
     
     # Test that model achieves better than random performance on training data
     accuracy = accuracy_score(y, predictions)

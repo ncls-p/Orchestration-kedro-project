@@ -35,7 +35,9 @@ def test_post_training():
     
     # Make predictions
     y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]
+    y_proba_all = model.predict_proba(X_test)
+    # Convert to numpy array and extract positive class probabilities
+    y_proba = np.asarray(y_proba_all)[:, 1]
     
     # Calculate metrics
     accuracy = accuracy_score(y_test, y_pred)
@@ -54,9 +56,10 @@ def test_post_training():
     
     # Test probability calibration
     # Average predicted probability should be close to actual positive rate
-    predicted_positive_rate = y_proba.mean()
-    actual_positive_rate = y_test.mean()
+    predicted_positive_rate = np.mean(y_proba)
+    # Convert to numpy for consistent interface
+    actual_positive_rate = np.mean(np.asarray(y_test))
     assert abs(predicted_positive_rate - actual_positive_rate) < 0.3
     
     # Test that probabilities are in valid range
-    assert all(0.0 <= p <= 1.0 for p in y_proba)
+    assert np.all((y_proba >= 0.0) & (y_proba <= 1.0))

@@ -19,10 +19,10 @@ def test_pre_training():
     y = pd.Series([0, 1, 0, 1, 1])
     
     # Test handling of missing values
-    assert X.isnull().any().any()  # Confirm we have missing values
+    assert X.isnull().values.any()  # Confirm we have missing values
     X_filled = X.copy()
     X_filled["feature1"] = X_filled["feature1"].fillna(X_filled["feature1"].mean())
-    assert not X_filled.isnull().any().any()  # No more missing values
+    assert not X_filled.isnull().values.any()  # No more missing values
     
     # Test data scaling
     scaler = StandardScaler()
