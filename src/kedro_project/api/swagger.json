@@ -1,0 +1,715 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Kedro Network Intrusion Detection API",
+    "description": "API Flask pour la détection d'intrusion réseau basée sur Kedro ML pipeline",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Kedro Project Team",
+      "email": "team@kedro-project.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:5000",
+      "description": "Serveur de développement local"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "default"
+        ],
+        "summary": "Route de base",
+        "description": "Retourne un message de bienvenue pour vérifier que l'API fonctionne",
+        "responses": {
+          "200": {
+            "description": "Message de bienvenue",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "API Flask - Kedro Network Intrusion Detection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Vérification de l'état de l'API",
+        "description": "Endpoint pour vérifier la santé de l'API",
+        "responses": {
+          "200": {
+            "description": "API en bonne santé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/data": {
+      "get": {
+        "tags": [
+          "Data Management"
+        ],
+        "summary": "Lister toutes les données d'intrusion",
+        "description": "Récupère toutes les données d'intrusion stockées en mémoire",
+        "responses": {
+          "200": {
+            "description": "Liste des données d'intrusion",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NetworkIntrusionData"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Data Management"
+        ],
+        "summary": "Ajouter une nouvelle donnée d'intrusion",
+        "description": "Ajoute une nouvelle donnée d'intrusion réseau au stockage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkIntrusionData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Données ajoutées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Champs manquants ou types invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Données déjà existantes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Data Management"
+        ],
+        "summary": "Mettre à jour une donnée d'intrusion",
+        "description": "Met à jour une donnée d'intrusion existante",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkIntrusionUpdateData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Données mises à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Champs d'identification manquants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Données non trouvées",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Data Management"
+        ],
+        "summary": "Supprimer une donnée d'intrusion",
+        "description": "Supprime une donnée d'intrusion du stockage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkIntrusionIdentifier"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Données supprimées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Champs d'identification manquants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Données non trouvées",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predict": {
+      "post": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Prédire une intrusion réseau",
+        "description": "Analyse une connexion réseau et prédit s'il s'agit d'une intrusion",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkIntrusionData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prédiction réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Champs manquants ou types invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predict/batch": {
+      "post": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Prédire plusieurs intrusions réseau",
+        "description": "Analyse un lot de connexions réseau et prédit lesquelles sont des intrusions",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchPredictionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prédictions réussies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPredictionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Format de données invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/info": {
+      "get": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Informations sur le modèle",
+        "description": "Retourne les informations sur le modèle de prédiction utilisé",
+        "responses": {
+          "200": {
+            "description": "Informations du modèle",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NetworkIntrusionData": {
+        "type": "object",
+        "required": [
+          "timestamp",
+          "source_ip",
+          "destination_ip",
+          "source_port",
+          "destination_port",
+          "protocol",
+          "payload_size",
+          "user_agent",
+          "status"
+        ],
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Horodatage de la connexion",
+            "example": "2024-01-15T14:30:00Z"
+          },
+          "source_ip": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "Adresse IP source",
+            "example": "192.168.1.100"
+          },
+          "destination_ip": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "Adresse IP de destination",
+            "example": "10.0.0.1"
+          },
+          "source_port": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Port source",
+            "example": 12345
+          },
+          "destination_port": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Port de destination",
+            "example": 80
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Protocole réseau",
+            "example": "TCP"
+          },
+          "payload_size": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Taille du payload en octets",
+            "example": 1024
+          },
+          "user_agent": {
+            "type": "string",
+            "description": "Agent utilisateur",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          },
+          "status": {
+            "type": "string",
+            "description": "Statut de la connexion",
+            "example": "success"
+          }
+        }
+      },
+      "NetworkIntrusionUpdateData": {
+        "type": "object",
+        "required": [
+          "timestamp",
+          "source_ip",
+          "destination_ip"
+        ],
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Horodatage de la connexion (identificateur)"
+          },
+          "source_ip": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "Adresse IP source (identificateur)"
+          },
+          "destination_ip": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "Adresse IP de destination (identificateur)"
+          },
+          "source_port": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Port source (optionnel pour mise à jour)"
+          },
+          "destination_port": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Port de destination (optionnel pour mise à jour)"
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Protocole réseau (optionnel pour mise à jour)"
+          },
+          "payload_size": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Taille du payload (optionnel pour mise à jour)"
+          },
+          "user_agent": {
+            "type": "string",
+            "description": "Agent utilisateur (optionnel pour mise à jour)"
+          },
+          "status": {
+            "type": "string",
+            "description": "Statut de la connexion (optionnel pour mise à jour)"
+          }
+        }
+      },
+      "NetworkIntrusionIdentifier": {
+        "type": "object",
+        "required": [
+          "timestamp",
+          "source_ip",
+          "destination_ip"
+        ],
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Horodatage de la connexion"
+          },
+          "source_ip": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "Adresse IP source"
+          },
+          "destination_ip": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "Adresse IP de destination"
+          }
+        }
+      },
+      "BatchPredictionRequest": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NetworkIntrusionData"
+            },
+            "description": "Liste des données à analyser"
+          }
+        }
+      },
+      "PredictionResult": {
+        "type": "object",
+        "properties": {
+          "is_intrusion": {
+            "type": "boolean",
+            "description": "True si c'est une intrusion, False sinon"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Score de confiance (0-1)"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "description": "Niveau de risque"
+          }
+        }
+      },
+      "PredictionResponse": {
+        "type": "object",
+        "properties": {
+          "prediction": {
+            "$ref": "#/components/schemas/PredictionResult"
+          },
+          "input_data": {
+            "$ref": "#/components/schemas/NetworkIntrusionData"
+          },
+          "model_version": {
+            "type": "string",
+            "description": "Version du modèle utilisé",
+            "example": "heuristic_v1.0"
+          }
+        }
+      },
+      "BatchPredictionResult": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "Index de l'élément dans le lot"
+          },
+          "prediction": {
+            "$ref": "#/components/schemas/PredictionResult"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "description": "Message d'erreur si la prédiction a échoué"
+          }
+        }
+      },
+      "BatchPredictionResponse": {
+        "type": "object",
+        "properties": {
+          "predictions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchPredictionResult"
+            }
+          },
+          "total_processed": {
+            "type": "integer",
+            "description": "Nombre total d'éléments traités"
+          },
+          "model_version": {
+            "type": "string",
+            "description": "Version du modèle utilisé"
+          }
+        }
+      },
+      "ModelInfo": {
+        "type": "object",
+        "properties": {
+          "model_name": {
+            "type": "string",
+            "description": "Nom du modèle"
+          },
+          "model_version": {
+            "type": "string",
+            "description": "Version du modèle"
+          },
+          "model_type": {
+            "type": "string",
+            "description": "Type de modèle"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Liste des caractéristiques utilisées"
+          },
+          "output": {
+            "type": "object",
+            "description": "Description du format de sortie"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description du modèle"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "healthy"
+          },
+          "service": {
+            "type": "string",
+            "example": "network-intrusion-detection-api"
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message de succès"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Message d'erreur"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "default",
+      "description": "Endpoints de base"
+    },
+    {
+      "name": "Health",
+      "description": "Endpoints de santé et statut"
+    },
+    {
+      "name": "Data Management",
+      "description": "Gestion des données d'intrusion (CRUD)"
+    },
+    {
+      "name": "Machine Learning",
+      "description": "Prédictions et informations sur le modèle"
+    }
+  ]
+}

@@ -169,3 +169,6 @@ mlruns/*
 
 # uv
 uv.lock
+
+# Temporary Flask server files
+temp_flask_server.py
